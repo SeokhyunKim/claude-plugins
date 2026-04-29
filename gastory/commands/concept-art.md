@@ -24,15 +24,15 @@ Before calling the script, determine the final prompt by handling the project's 
 
 Use the merged prompt (output of Step 1) as the actual prompt argument to the script.
 
-The user's OpenAI organization verification is still pending, so default to `--provider xai` unless the user explicitly specified a provider.
-
 ```bash
-python3 "${CLAUDE_PLUGIN_ROOT}/bin/generate-concept-art.py" --provider xai [other flags...] "<merged prompt, properly shell-escaped>"
+python3 "${CLAUDE_PLUGIN_ROOT}/bin/generate-concept-art.py" [other flags...] "<merged prompt, properly shell-escaped>"
 ```
+
+The script defaults to `--provider openai` (`gpt-image-2`) for both generation and `--from` edits. Pass `--provider xai` only when the user explicitly requests it.
 
 Strip `--no-concept`, `--concept`, `--preset` flags before passing to the script (the script doesn't know them). The `--from <name>` flag IS understood by the script — pass it through.
 
-**`--from` mode (image-to-image)**: when the user passes `--from <ref-name>`, the script uses xAI's edit endpoint with `gastory-output/<project>/concept/<ref-name>.png` as a reference image. This preserves the character's appearance from the reference while applying the new prompt as the desired pose/scene. Currently supports only xai provider.
+**`--from` mode (image-to-image)**: when the user passes `--from <ref-name>`, the script sends `gastory-output/<project>/concept/<ref-name>.png` as a reference image to the provider's edit endpoint (OpenAI `images/edits` by default, xAI `images/edits` if `--provider xai`). This preserves the character's appearance from the reference while applying the new prompt as the desired pose/scene.
 
 ## Step 3: Report
 
@@ -41,4 +41,4 @@ Output paths: `gastory-output/<project>/concept/<name>.png` plus a JSON sidecar.
 On error:
 - Missing API key → point to `~/.config/gastory/.env`
 - "현재 프로젝트가 설정되지 않았습니다" → tell the user to run `/gastory:project <name>` first
-- `billing_hard_limit_reached` on OpenAI → verification still pending; suggest `--provider xai`
+- `billing_hard_limit_reached` or org/verification error on OpenAI → suggest retrying with `--provider xai` as a fallback

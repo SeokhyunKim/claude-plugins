@@ -1,6 +1,6 @@
 ---
 description: Generate an animation video from a concept image (image-to-video) via fal.ai Seedance 2.0 or xAI grok-imagine-video
-argument-hint: [--project P] [--source N] [--action A] [--provider fal-seedance|xai] [--no-concept | --concept "..."] <motion prompt>
+argument-hint: [--project P] [--source N] [--action A] [--provider fal-seedance|xai] [--free-camera] [--no-concept | --concept "..."] <motion prompt>
 allowed-tools: Bash(python3 *), Read, Write, Skill
 ---
 
@@ -44,6 +44,7 @@ Notes:
 - Generation takes 1–3 minutes; the script polls and prints status updates
 - fal.ai Seedance 2.0 Fast tier 720p costs ~24 cents per second of generated video (a 5-sec video ≈ 1.20 USD)
 - Audio is disabled by default (game asset use case); pass `--audio` to enable
+- **Camera/composition lock is applied by default** — the script automatically appends a directive to keep the camera fixed (no zoom/pan), the character at constant size and screen position, gaze direction preserved. This matches the game-asset use case. Pass `--free-camera` to disable when you actually want camera movement (cinematics, cutscenes).
 
 ## Step 3: Report
 

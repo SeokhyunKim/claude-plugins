@@ -11,6 +11,7 @@ import json
 import sys
 import urllib.error
 import urllib.request
+import uuid
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -28,7 +29,7 @@ PROVIDERS = {
     "openai": {
         "env_key": "OPENAI_API_KEY",
         "endpoint": "https://api.openai.com/v1/images/generations",
-        "edit_endpoint": None,  # OpenAI edit uses multipart; not yet implemented
+        "edit_endpoint": "https://api.openai.com/v1/images/edits",
         "default_model": "gpt-image-2",
     },
     "xai": {
@@ -99,6 +100,54 @@ def call_xai_edit(prompt: str, model: str, image_data_uri: str, api_key: str) ->
     return extract_image_bytes(post_json(endpoint, body, api_key))
 
 
+def _build_multipart(fields: dict[str, str], image_path: Path) -> tuple[bytes, str]:
+    boundary = uuid.uuid4().hex
+    chunks: list[bytes] = []
+    for name, value in fields.items():
+        chunks.append(f"--{boundary}\r\n".encode())
+        chunks.append(
+            f'Content-Disposition: form-data; name="{name}"\r\n\r\n'.encode()
+        )
+        chunks.append(value.encode("utf-8"))
+        chunks.append(b"\r\n")
+    chunks.append(f"--{boundary}\r\n".encode())
+    chunks.append(
+        f'Content-Disposition: form-data; name="image"; filename="{image_path.name}"\r\n'.encode()
+    )
+    chunks.append(b"Content-Type: image/png\r\n\r\n")
+    chunks.append(image_path.read_bytes())
+    chunks.append(b"\r\n")
+    chunks.append(f"--{boundary}--\r\n".encode())
+    return b"".join(chunks), f"multipart/form-data; boundary={boundary}"
+
+
+def call_openai_edit(
+    prompt: str, model: str, image_path: Path, api_key: str, size: str
+) -> bytes:
+    endpoint = PROVIDERS["openai"]["edit_endpoint"]
+    body, content_type = _build_multipart(
+        {"model": model, "prompt": prompt, "n": "1", "size": size}, image_path
+    )
+    req = urllib.request.Request(
+        endpoint,
+        data=body,
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": content_type,
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=300) as resp:
+            data = json.loads(resp.read())
+    except urllib.error.HTTPError as e:
+        detail = e.read().decode("utf-8", errors="replace")
+        raise SystemExit(f"API 오류 (HTTP {e.code}):\n{detail}")
+    except urllib.error.URLError as e:
+        raise SystemExit(f"네트워크 오류: {e.reason}")
+    return extract_image_bytes(data)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="OpenAI 또는 xAI 이미지 모델로 게임 에셋 원화를 생성합니다."
@@ -114,7 +163,7 @@ def main() -> None:
         "--from",
         dest="from_name",
         default=None,
-        help="참고 이미지 이름 (현재 프로젝트의 concept 디렉토리). 지정 시 image-to-image edit으로 동작 (xai 전용)",
+        help="참고 이미지 이름 (현재 프로젝트의 concept 디렉토리). 지정 시 image-to-image edit으로 동작",
     )
     parser.add_argument(
         "--provider",
@@ -149,11 +198,6 @@ def main() -> None:
         print(f"[gastory] 경고: 기존 파일 덮어씀: {png_path}", file=sys.stderr)
 
     if args.from_name:
-        if args.provider != "xai":
-            raise SystemExit(
-                f"--from은 현재 xai provider만 지원합니다 (요청한 provider={args.provider}).\n"
-                "OpenAI는 verification 풀린 후 추후 추가 예정."
-            )
         ref_path = OUTPUT_ROOT / project / "concept" / f"{args.from_name}.png"
         if not ref_path.is_file():
             available = sorted(p.stem for p in (OUTPUT_ROOT / project / "concept").glob("*.png"))
@@ -166,9 +210,14 @@ def main() -> None:
             f"from={args.from_name} provider={args.provider} model={args.model}",
             file=sys.stderr,
         )
-        image_bytes = call_xai_edit(
-            args.prompt, args.model, image_to_data_uri(ref_path), api_key
-        )
+        if args.provider == "openai":
+            image_bytes = call_openai_edit(
+                args.prompt, args.model, ref_path, api_key, args.size
+            )
+        else:
+            image_bytes = call_xai_edit(
+                args.prompt, args.model, image_to_data_uri(ref_path), api_key
+            )
         request_body_meta = {"mode": "edit", "from": args.from_name}
     else:
         print(

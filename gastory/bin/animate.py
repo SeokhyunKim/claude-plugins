@@ -40,6 +40,13 @@ DEFAULT_PROVIDER = "fal-seedance"
 POLL_INTERVAL_SEC = 3
 POLL_TIMEOUT_SEC = 600
 
+CAMERA_LOCK_SUFFIX = (
+    "카메라는 완전히 고정되어 있고 줌인/줌아웃이나 이동이 전혀 없다. "
+    "케릭터의 위치와 크기, 화면 내 차지하는 비율, 시선 방향, 전체 실루엣을 그대로 유지한다. "
+    "static camera, no camera movement, no zoom, fixed framing, "
+    "character size and position constant in frame."
+)
+
 
 def find_source_image(project: str, source: str | None, image_path: str | None) -> Path:
     """Resolve which still image to animate."""
@@ -215,11 +222,20 @@ def main() -> None:
         action="store_true",
         help="[fal-seedance] 오디오 생성 활성화 (기본: 끔). 게임 에셋엔 보통 불필요",
     )
+    parser.add_argument(
+        "--free-camera",
+        action="store_true",
+        help="기본 카메라/구도 고정 지시문을 프롬프트에 추가하지 않음 (시네마틱/컷씬용)",
+    )
     args = parser.parse_args()
+
+    user_prompt = args.prompt
+    if not args.free_camera:
+        args.prompt = f"{args.prompt} {CAMERA_LOCK_SUFFIX}"
 
     project = resolve_project(args.project)
     image_path = find_source_image(project, args.source, args.image)
-    action = args.action or slugify(args.prompt)
+    action = args.action or slugify(user_prompt)
 
     cfg = PROVIDERS[args.provider]
     if args.model is None:
@@ -253,7 +269,9 @@ def main() -> None:
     metadata = {
         "project": project,
         "action": action,
+        "user_prompt": user_prompt,
         "prompt": args.prompt,
+        "camera_lock_applied": not args.free_camera,
         "provider": args.provider,
         "model": args.model,
         "duration": args.duration,

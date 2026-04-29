@@ -73,7 +73,7 @@ For **character consistency** across multiple poses, use the first concept as a 
 /gastory:concept-art --from idle --name attack "검을 휘두르는 자세"
 ```
 
-This switches to xAI's `image-to-image` edit endpoint, preserving the character's appearance from the reference while applying the new pose. Single-image consistency is typically 70–85%.
+This switches to image-to-image edit mode (default: OpenAI `gpt-image-2`; xAI is also supported via `--provider xai`), preserving the character's appearance from the reference while applying the new pose. Single-image consistency is typically 70–85%.
 
 Override flags:
 - `--no-concept` — skip the project art style for this call
@@ -95,6 +95,9 @@ Override:
 - `--provider xai` — use xAI `grok-imagine-video` instead
 - `--duration N` — 4–15 seconds (default 5)
 - `--resolution {480p,720p}` — default 720p
+- `--free-camera` — disable the default camera/composition lock (use when you actually want camera movement)
+
+By default, animate appends a camera-lock directive to your motion prompt — keeps the camera static, the character at constant size and screen position, and gaze direction preserved. This matches the game-asset use case. Pass `--free-camera` for cinematics or cutscenes that need camera movement.
 
 ### 5. Extract frames + GIF + sprite sheet
 
