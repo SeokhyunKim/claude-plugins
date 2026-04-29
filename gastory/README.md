@@ -1,6 +1,6 @@
 # gastory
 
-LLM-driven game asset generation pipeline for Claude Code. Generates concept art, animation videos, frames, GIFs, and sprite sheets — all organized by project with automatic style consistency.
+**gastory** (**G**ame **A**sset Fac**tory**) — LLM-driven game asset generation pipeline for Claude Code. Generates concept art, animation videos, frames, GIFs, and sprite sheets — all organized by project with automatic style consistency.
 
 ## Install
 

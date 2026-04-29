@@ -17,7 +17,7 @@ After install, run `/reload-plugins` (or restart Claude Code) to activate.
 
 ### gastory
 
-LLM-driven game asset generation pipeline. Turns text prompts into characters, animations, and sprite sheets:
+Short for **G**ame **A**sset Fac**tory**. LLM-driven game asset generation pipeline that turns text prompts into characters, animations, and sprite sheets:
 
 ```
 /gastory:project <name>                    # set up a new project
