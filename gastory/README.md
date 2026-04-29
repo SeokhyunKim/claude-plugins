@@ -4,12 +4,17 @@
 
 ## Install
 
+Inside Claude Code (not a shell), run:
+
 ```
 /plugin marketplace add SeokhyunKim/claude-plugins
 /plugin install gastory@seokhyunkim
+/reload-plugins
 ```
 
-Run `/reload-plugins` after install.
+The first command registers this repo as a marketplace, the second installs the `gastory` plugin from it, and `/reload-plugins` activates it without restarting Claude Code.
+
+After install, configure your API keys (next section) before running any `/gastory:*` command.
 
 ## Setup: API keys
 
