@@ -1,0 +1,23 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local Claude Code settings (user-specific paths/permissions)
+.claude/settings.local.json
+
+# Environment files (API keys live at ~/.config/gastory/.env, but be defensive)
+.env
+.env.local
+
+# Generated game asset outputs (user-specific, large)
+gastory-output/
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo

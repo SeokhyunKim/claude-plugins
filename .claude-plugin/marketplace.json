@@ -1,0 +1,15 @@
+{
+  "name": "seokhyunkim",
+  "owner": {
+    "name": "Seokhyun Kim",
+    "url": "https://github.com/SeokhyunKim"
+  },
+  "description": "Seokhyun Kim's personal Claude Code plugins",
+  "plugins": [
+    {
+      "name": "gastory",
+      "source": "./gastory",
+      "description": "LLM-based game asset generation pipeline — characters, animations, sprite sheets"
+    }
+  ]
+}
