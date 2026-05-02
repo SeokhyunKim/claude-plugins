@@ -1,9 +1,0 @@
-{
-  "name": "gastory",
-  "description": "LLM-based game asset generation pipeline — generates character images via image-gen APIs, animates them via image-to-video APIs, and produces animated GIFs and sprite-sheet PNGs from extracted frames",
-  "version": "0.1.0",
-  "author": {
-    "name": "Seokhyun Kim",
-    "url": "https://github.com/SeokhyunKim"
-  }
-}

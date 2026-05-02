@@ -8,8 +8,19 @@
   "plugins": [
     {
       "name": "gastory",
-      "source": "./gastory",
+      "source": {
+        "source": "github",
+        "repo": "SeokhyunKim/gastory"
+      },
       "description": "LLM-based game asset generation pipeline — characters, animations, sprite sheets"
+    },
+    {
+      "name": "code-wiki",
+      "source": {
+        "source": "github",
+        "repo": "SeokhyunKim/code-wiki"
+      },
+      "description": "Hierarchical LLM-maintained wiki for codebases — mirrors source tree, synthesizes bottom-up, with topic pages for cross-cutting concerns"
     }
   ]
 }

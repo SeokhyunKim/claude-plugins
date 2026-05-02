@@ -1,6 +1,6 @@
 # Seokhyun's Claude Code Plugins
 
-A personal collection of Claude Code plugins, packaged as a single marketplace.
+A personal Claude Code marketplace. Each plugin lives in its own repository; this repo holds only the marketplace manifest.
 
 ## Install
 
@@ -15,21 +15,21 @@ After install, run `/reload-plugins` (or restart Claude Code) to activate.
 
 ## Available plugins
 
-### gastory
+### [gastory](https://github.com/SeokhyunKim/gastory)
 
-Short for **G**ame **A**sset Fac**tory**. LLM-driven game asset generation pipeline that turns text prompts into characters, animations, and sprite sheets:
+Short for **G**ame **A**sset Fac**tory**. LLM-driven game asset generation pipeline that turns text prompts into characters, animations, and sprite sheets. Built on OpenAI `gpt-image-2` / xAI `grok-imagine-image` for stills, fal.ai Seedance 2.0 for video, and ffmpeg + Pillow for local frame processing.
 
 ```
-/gastory:project <name>                    # set up a new project
-/gastory:concept-art <description>         # generate concept art (auto-applies project style)
-/gastory:concept-art --from idle <pose>    # image-to-image for character consistency
-/gastory:animate --source <ref> <motion>   # image-to-video
-/gastory:extract-frames --action <name> --gif --spritesheet
+/plugin install gastory@seokhyunkim
 ```
 
-Built on OpenAI `gpt-image-2` / xAI `grok-imagine-image` for stills, fal.ai Seedance 2.0 for video, and ffmpeg + Pillow for local frame processing.
+### [code-wiki](https://github.com/SeokhyunKim/code-wiki)
 
-[Full docs →](./gastory/README.md)
+Hierarchical, LLM-maintained wiki for codebases. Mirrors the source tree as markdown, synthesizes bottom-up (leaves → parents), and lazy-generates topic pages for cross-cutting concerns. Following [Karpathy's llm-wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) adapted to source code.
+
+```
+/plugin install code-wiki@seokhyunkim
+```
 
 ## Updates
 
